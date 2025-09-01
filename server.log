@@ -1,0 +1,535 @@
+
+> rh-matilha@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.32
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.3s
+ ○ Compiling / ...
+ ✓ Compiled / in 13.5s (1807 modules)
+ GET / 200 in 14193ms
+ ✓ Compiled in 1036ms (896 modules)
+ GET / 200 in 204ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1962ms (1817 modules)
+ GET /avatars/01.png 404 in 2094ms
+ GET /api/dashboard/stats 200 in 2443ms
+ GET /api/dashboard/stats 200 in 158ms
+ ✓ Compiled /api/dashboard/atividades in 349ms (935 modules)
+ ✓ Compiled (937 modules)
+ GET /api/dashboard/atividades 200 in 668ms
+ GET /api/dashboard/departamentos 200 in 674ms
+ GET /api/dashboard/departamentos 200 in 44ms
+ GET /api/dashboard/atividades 200 in 64ms
+ ○ Compiling /funcionarios ...
+ ✓ Compiled /funcionarios in 5.4s (3019 modules)
+ GET /api/dashboard/stats 200 in 74ms
+ GET /api/dashboard/stats 200 in 45ms
+ ✓ Compiled /api/funcionarios in 473ms (1539 modules)
+ GET /api/funcionarios 200 in 545ms
+ GET /api/funcionarios 200 in 22ms
+ GET /avatars/cmeukrqn70004y2myjdol9emz.png 404 in 202ms
+ GET /avatars/cmeukrqmx0002y2my59uujxh5.png 404 in 172ms
+ GET /avatars/cmeukrqmx0002y2my59uujxh5.png 404 in 78ms
+ ○ Compiling /ferias ...
+ ✓ Compiled /ferias in 743ms (3037 modules)
+ GET /api/funcionarios 200 in 19ms
+ GET /ferias 200 in 396ms
+ GET /avatars/01.png 404 in 36ms
+ ✓ Compiled in 5.1s (3005 modules)
+ ✓ Compiled in 1226ms (1505 modules)
+ ✓ Compiled in 322ms (1503 modules)
+ ✓ Compiled in 872ms (1503 modules)
+ ✓ Compiled in 942ms (1503 modules)
+ ✓ Compiled in 2.8s (3016 modules)
+ ✓ Compiled /api/funcionarios in 1065ms (3016 modules)
+ ✓ Compiled in 1ms (1545 modules)
+ GET /api/ferias 200 in 1768ms
+ GET /api/funcionarios 200 in 1783ms
+ GET /api/ferias 200 in 114ms
+ GET /api/funcionarios 200 in 118ms
+ ✓ Compiled in 1156ms (3048 modules)
+ ✓ Compiled in 1ms (1545 modules)
+ ✓ Compiled in 0ms (1545 modules)
+ ✓ Compiled in 0ms (1545 modules)
+ GET /api/funcionarios 200 in 1792ms
+ GET /api/ferias 200 in 1805ms
+ ✓ Compiled in 0ms (1545 modules)
+ GET /api/funcionarios 200 in 789ms
+ GET /api/ferias 200 in 792ms
+ ✓ Compiled in 3.3s (3048 modules)
+ ✓ Compiled in 2.7s (3016 modules)
+ ✓ Compiled in 500ms (1503 modules)
+ GET /ferias 200 in 463ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /api/funcionarios in 4.8s (3019 modules)
+ ✓ Compiled in 0ms (1544 modules)
+ ✓ Compiled in 940ms (3035 modules)
+ GET /avatars/01.png 404 in 6159ms
+ GET /api/funcionarios 200 in 2353ms
+ ✓ Compiled in 3.7s (3049 modules)
+ GET /api/funcionarios 200 in 146ms
+ ○ Compiling /api/ferias ...
+ ✓ Compiled /api/ferias in 934ms (1546 modules)
+ ✓ Compiled in 0ms (1546 modules)
+ ✓ Compiled in 1ms (1546 modules)
+ ✓ Compiled in 1ms (1546 modules)
+ GET /api/ferias 200 in 1791ms
+ GET /api/funcionarios 200 in 1646ms
+ ✓ Compiled in 1ms (1546 modules)
+ GET /api/ferias 200 in 1237ms
+ ✓ Compiled in 1136ms (3051 modules)
+ ✓ Compiled in 1ms (1546 modules)
+ ✓ Compiled in 1ms (1546 modules)
+ ✓ Compiled in 1ms (1546 modules)
+ GET /api/funcionarios 200 in 1655ms
+ GET /api/ferias 200 in 1658ms
+ ✓ Compiled in 822ms (3048 modules)
+ ✓ Compiled in 4.3s (3016 modules)
+ ✓ Compiled in 803ms (3016 modules)
+ ✓ Compiled in 1489ms (3016 modules)
+ ⨯ ./src/app/ferias/page.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:290:1]
+ [2m290[0m |   );
+ [2m291[0m | }
+ [2m292[0m | 
+ [2m293[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^[0m
+ [2m294[0m |           <CardDescription>
+ [2m295[0m |             Visualize o planejamento de férias por mês
+ [2m296[0m |           </CardDescription>
+     `----
+
+  [31mx[0m Expected ';', '}' or <eof>
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:290:1]
+ [2m290[0m |   );
+ [2m291[0m | }
+ [2m292[0m | 
+ [2m293[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^^^^^^|^^^^^[0m[33;1m ^^[0m
+     :                           [31;1m`-- [31;1mThis is the expression part of an expression statement[0m[0m
+ [2m294[0m |           <CardDescription>
+ [2m295[0m |             Visualize o planejamento de férias por mês
+ [2m296[0m |           </CardDescription>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/ferias/page.tsx
+ ○ Compiling /_error ...
+ ⨯ ./src/app/ferias/page.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:290:1]
+ [2m290[0m |   );
+ [2m291[0m | }
+ [2m292[0m | 
+ [2m293[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^[0m
+ [2m294[0m |           <CardDescription>
+ [2m295[0m |             Visualize o planejamento de férias por mês
+ [2m296[0m |           </CardDescription>
+     `----
+
+  [31mx[0m Expected ';', '}' or <eof>
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:290:1]
+ [2m290[0m |   );
+ [2m291[0m | }
+ [2m292[0m | 
+ [2m293[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^^^^^^|^^^^^[0m[33;1m ^^[0m
+     :                           [31;1m`-- [31;1mThis is the expression part of an expression statement[0m[0m
+ [2m294[0m |           <CardDescription>
+ [2m295[0m |             Visualize o planejamento de férias por mês
+ [2m296[0m |           </CardDescription>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/ferias/page.tsx
+ GET /ferias 500 in 117ms
+ ✓ Compiled /_error in 1246ms (1680 modules)
+ ○ Compiling /_not-found ...
+ ⨯ ./src/app/ferias/page.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:290:1]
+ [2m290[0m |   );
+ [2m291[0m | }
+ [2m292[0m | 
+ [2m293[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^[0m
+ [2m294[0m |           <CardDescription>
+ [2m295[0m |             Visualize o planejamento de férias por mês
+ [2m296[0m |           </CardDescription>
+     `----
+
+  [31mx[0m Expected ';', '}' or <eof>
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:290:1]
+ [2m290[0m |   );
+ [2m291[0m | }
+ [2m292[0m | 
+ [2m293[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^^^^^^|^^^^^[0m[33;1m ^^[0m
+     :                           [31;1m`-- [31;1mThis is the expression part of an expression statement[0m[0m
+ [2m294[0m |           <CardDescription>
+ [2m295[0m |             Visualize o planejamento de férias por mês
+ [2m296[0m |           </CardDescription>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/ferias/page.tsx
+ GET /ferias 500 in 6609ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/7fb3e932c0909f45.webpack.hot-update.json 500 in 6889ms
+ ✓ Compiled /_not-found in 4.9s (3231 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /ferias 200 in 589ms
+ GET /avatars/01.png 404 in 27ms
+ ○ Compiling /api/funcionarios ...
+ ✓ Compiled /api/funcionarios in 725ms (1584 modules)
+ ✓ Compiled in 0ms (1586 modules)
+ ✓ Compiled in 0ms (1586 modules)
+ ✓ Compiled in 1ms (1586 modules)
+ GET /api/ferias 200 in 1763ms
+ ✓ Compiled in 0ms (1586 modules)
+ GET /api/funcionarios 200 in 2263ms
+ ✓ Compiled in 1ms (1586 modules)
+ ✓ Compiled in 1ms (1586 modules)
+ ✓ Compiled in 0ms (1586 modules)
+ GET /api/ferias 200 in 1622ms
+ GET /api/funcionarios 200 in 1291ms
+ ⨯ ./src/app/ferias/page.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:311:1]
+ [2m311[0m |     </div>
+ [2m312[0m |   );
+ [2m313[0m | }
+ [2m314[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^[0m
+ [2m315[0m |           <CardDescription>
+ [2m316[0m |             Visualize o planejamento de férias por mês
+ [2m317[0m |           </CardDescription>
+     `----
+
+  [31mx[0m Expected ';', '}' or <eof>
+     ,-[[36;1;4m/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/src/app/ferias/page.tsx[0m:311:1]
+ [2m311[0m |     </div>
+ [2m312[0m |   );
+ [2m313[0m | }
+ [2m314[0m |           <CardTitle>Calendário de Férias 2025</CardTitle>
+     : [31;1m                    ^^^^^^|^^^^^[0m[33;1m ^^[0m
+     :                           [31;1m`-- [31;1mThis is the expression part of an expression statement[0m[0m
+ [2m315[0m |           <CardDescription>
+ [2m316[0m |             Visualize o planejamento de férias por mês
+ [2m317[0m |           </CardDescription>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/ferias/page.tsx
+ GET /ferias 500 in 106ms
+ ✓ Compiled in 4.7s (3257 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/7fb3e932c0909f45.webpack.hot-update.json 404 in 5002ms
+ GET /ferias 404 in 279ms
+ GET /avatars/01.png 404 in 30ms
+ ✓ Compiled in 4.1s (3223 modules)
+ ✓ Compiled in 1020ms (3209 modules)
+ ✓ Compiled in 981ms (1681 modules)
+ ✓ Compiled in 450ms (1679 modules)
+ ○ Compiling /ferias ...
+ ✓ Compiled /ferias in 2.5s (3240 modules)
+ GET /ferias 200 in 3013ms
+ ○ Compiling /api/funcionarios ...
+ ✓ Compiled /api/funcionarios in 1016ms (3261 modules)
+ GET /api/funcionarios 200 in 1345ms
+ GET /api/ferias 200 in 1349ms
+ GET /avatars/01.png 404 in 1362ms
+ GET /api/funcionarios 200 in 30ms
+ GET /api/ferias 200 in 31ms
+ GET /api/funcionarios 200 in 22ms
+Erro ao criar solicitação de férias: PrismaClientValidationError: 
+Invalid `prisma.ferias.create()` invocation:
+
+{
+  data: {
+    funcionarioId: "cmeukrqn70004y2myjdol9emz",
+    ano: 2025,
+    dataInicio: new Date("2025-09-04T00:00:00.000Z"),
+    dataFim: new Date("2025-09-06T00:00:00.000Z"),
+    diasSolicitados: 3,
+    diasDisponiveis: 30,
+    motivo: "ferias acumuladas de 3 anos",
+    ~~~~~~
+    status: "PENDENTE",
+    observacoes: "pausinha",
+?   id?: String,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime
+  },
+  include: {
+    funcionario: {
+      select: {
+        id: true,
+        nome: true,
+        cargo: true,
+        departamento: true
+      }
+    }
+  }
+}
+
+Unknown argument `motivo`. Available options are marked with ?.
+    at _n (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at ei.handleRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6926)
+    at ei.handleAndLogRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6608)
+    at ei.request (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6315)
+    at async a (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/ferias/route.ts:66:24)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  clientVersion: '6.15.0'
+}
+ POST /api/ferias 500 in 99ms
+Erro ao criar solicitação de férias: PrismaClientValidationError: 
+Invalid `prisma.ferias.create()` invocation:
+
+{
+  data: {
+    funcionarioId: "cmeukrqn70004y2myjdol9emz",
+    ano: 2025,
+    dataInicio: new Date("2025-09-04T00:00:00.000Z"),
+    dataFim: new Date("2025-09-06T00:00:00.000Z"),
+    diasSolicitados: 3,
+    diasDisponiveis: 30,
+    motivo: "ferias acumuladas de 3 anos",
+    ~~~~~~
+    status: "PENDENTE",
+    observacoes: "pausinha",
+?   id?: String,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime
+  },
+  include: {
+    funcionario: {
+      select: {
+        id: true,
+        nome: true,
+        cargo: true,
+        departamento: true
+      }
+    }
+  }
+}
+
+Unknown argument `motivo`. Available options are marked with ?.
+    at _n (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at ei.handleRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6926)
+    at ei.handleAndLogRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6608)
+    at ei.request (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6315)
+    at async a (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/ferias/route.ts:66:24)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  clientVersion: '6.15.0'
+}
+ POST /api/ferias 500 in 17ms
+ ○ Compiling /api/dashboard/stats ...
+ ✓ Compiled /api/dashboard/stats in 2.5s (1582 modules)
+ GET /api/dashboard/stats 200 in 2937ms
+ GET /api/dashboard/stats 200 in 25ms
+ ✓ Compiled /api/funcionarios in 415ms (1584 modules)
+ GET /api/funcionarios 200 in 520ms
+ GET /api/funcionarios 200 in 23ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1004ms (3261 modules)
+ GET /avatars/cmeukrqn70004y2myjdol9emz.png 404 in 1231ms
+ GET /avatars/cmeukrqmx0002y2my59uujxh5.png 404 in 1231ms
+ ✓ Compiled /api/ferias in 387ms (1587 modules)
+ POST /api/ferias 404 in 506ms
+ GET /api/funcionarios 200 in 10ms
+Erro ao criar solicitação de férias: PrismaClientValidationError: 
+Invalid `prisma.ferias.create()` invocation:
+
+{
+  data: {
+    funcionarioId: "cmeukrqmx0002y2my59uujxh5",
+    ano: 2024,
+    dataInicio: new Date("2025-01-01T00:00:00.000Z"),
+    dataFim: new Date("2025-01-05T00:00:00.000Z"),
+    diasSolicitados: 5,
+    diasDisponiveis: 30,
+    motivo: "Férias anuais",
+    ~~~~~~
+    status: "PENDENTE",
+    observacoes: "Teste de API",
+?   id?: String,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime
+  },
+  include: {
+    funcionario: {
+      select: {
+        id: true,
+        nome: true,
+        cargo: true,
+        departamento: true
+      }
+    }
+  }
+}
+
+Unknown argument `motivo`. Available options are marked with ?.
+    at _n (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at ei.handleRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6926)
+    at ei.handleAndLogRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6608)
+    at ei.request (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6315)
+    at async a (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/ferias/route.ts:66:24)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  clientVersion: '6.15.0'
+}
+ POST /api/ferias 500 in 13ms
+ GET /api/ferias 200 in 15ms
+ GET /api/funcionarios 200 in 17ms
+ GET /api/funcionarios 200 in 20ms
+ GET /api/ferias 200 in 23ms
+Erro ao criar solicitação de férias: PrismaClientValidationError: 
+Invalid `prisma.ferias.create()` invocation:
+
+{
+  data: {
+    funcionarioId: "cmeukrqmx0002y2my59uujxh5",
+    ano: 2024,
+    dataInicio: new Date("2025-01-01T00:00:00.000Z"),
+    dataFim: new Date("2025-01-05T00:00:00.000Z"),
+    diasSolicitados: 5,
+    diasDisponiveis: 30,
+    motivo: "Férias anuais",
+    ~~~~~~
+    status: "PENDENTE",
+    observacoes: "Teste de API",
+?   id?: String,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime
+  },
+  include: {
+    funcionario: {
+      select: {
+        id: true,
+        nome: true,
+        cargo: true,
+        departamento: true
+      }
+    }
+  }
+}
+
+Unknown argument `motivo`. Available options are marked with ?.
+    at _n (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at ei.handleRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6926)
+    at ei.handleAndLogRequestError (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6608)
+    at ei.request (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:121:6315)
+    at async a (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/ferias/route.ts:66:24)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/nicolasiargas/Documents/RH - Matilha/rh-matilha/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  clientVersion: '6.15.0'
+}
+ POST /api/ferias 500 in 13ms
+ ✓ Compiled in 2.4s (3270 modules)
+ POST /api/ferias 400 in 64ms
+ ✓ Compiled in 3.6s (3270 modules)
+ ✓ Compiled in 1248ms (3270 modules)
+ POST /api/ferias 201 in 32ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 576ms (3259 modules)
+ POST /api/ferias 404 in 1281ms
+ ✓ Compiled in 658ms (3273 modules)
+ GET /ferias 404 in 63ms
+ GET /_next/static/css/app/layout.css?v=1756345555566 404 in 106ms
+ GET /_next/static/chunks/main-app.js?v=1756345555566 404 in 127ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 40ms
+ POST /api/ferias 404 in 17ms
+[?25h

@@ -1,0 +1,278 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Funcionario {
+  id                  String               @id @default(cuid())
+  cpf                 String               @unique
+  cnpj                String?
+  nome                String
+  emailCorporativo    String               @unique
+  emailPessoal        String?
+  telefone            String
+  telefoneCorporativo String?
+  teams               String?
+  dataAdmissao        DateTime
+  dataDemissao        DateTime?
+  status              StatusFuncionario
+  cargo               String
+  departamento        String
+  salario             Float
+  chavePix            String?
+  observacoes         String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  alteracoesSalariais AlteracaoSalarial[]
+  beneficios          Beneficio[]
+  contratos           Contrato[]
+  endereco            Endereco?
+  equipamentos        Equipamento[]
+  ferias              Ferias[]
+  projetos            ProjetoFuncionario[]
+
+  @@map("funcionarios")
+}
+
+model Endereco {
+  id            String      @id @default(cuid())
+  rua           String
+  numero        String
+  complemento   String?
+  bairro        String
+  cidade        String
+  estado        String
+  cep           String
+  funcionarioId String      @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+
+  @@map("enderecos")
+}
+
+model Beneficio {
+  id            String        @id @default(cuid())
+  tipo          TipoBeneficio
+  descricao     String
+  valor         Float
+  ativo         Boolean       @default(true)
+  dataInicio    DateTime
+  dataFim       DateTime?
+  funcionarioId String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  funcionario   Funcionario   @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+
+  @@map("beneficios")
+}
+
+model Equipamento {
+  id             String            @id @default(cuid())
+  tipo           TipoEquipamento
+  descricao      String
+  marca          String
+  modelo         String
+  numeroSerie    String?
+  dataEmprestimo DateTime?
+  dataDevolucao  DateTime?
+  status         StatusEquipamento
+  observacoes    String?
+  funcionarioId  String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  funcionario    Funcionario?      @relation(fields: [funcionarioId], references: [id])
+
+  @@map("equipamentos")
+}
+
+model Projeto {
+  id           String               @id @default(cuid())
+  nome         String
+  descricao    String
+  cliente      String?
+  dataInicio   DateTime
+  dataFim      DateTime?
+  status       StatusProjeto
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  funcionarios ProjetoFuncionario[]
+
+  @@map("projetos")
+}
+
+model ProjetoFuncionario {
+  id                String      @id @default(cuid())
+  projetoId         String
+  funcionarioId     String
+  papel             String
+  responsabilidades String
+  dataInicio        DateTime
+  dataFim           DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  funcionario       Funcionario @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+  projeto           Projeto     @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  @@unique([projetoId, funcionarioId])
+  @@map("projeto_funcionarios")
+}
+
+model Ferias {
+  id              String       @id @default(cuid())
+  ano             Int
+  dataInicio      DateTime
+  dataFim         DateTime
+  diasSolicitados Int
+  diasDisponiveis Int
+  motivo          String?
+  status          StatusFerias
+  observacoes     String?
+  motivoRecusa    String?
+  motivoRenovacao String?
+  dataAprovacao   DateTime?
+  dataRecusa      DateTime?
+  aprovadoPor     String?
+  recusadoPor     String?
+  funcionarioId   String
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  funcionario     Funcionario  @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+
+  @@map("ferias")
+}
+
+model AlteracaoSalarial {
+  id                String      @id @default(cuid())
+  dataAlteracao     DateTime
+  salarioAnterior   Float
+  novoSalario       Float
+  percentualAumento Float
+  motivo            String
+  aprovadoPor       String?
+  observacoes       String?
+  funcionarioId     String
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  funcionario       Funcionario @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+
+  @@map("alteracoes_salariais")
+}
+
+model Contrato {
+  id            String         @id @default(cuid())
+  tipo          TipoContrato
+  dataInicio    DateTime
+  dataFim       DateTime?
+  salario       Float
+  beneficios    String
+  clausulas     String
+  arquivo       String?
+  status        StatusContrato
+  funcionarioId String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  funcionario   Funcionario    @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+
+  @@map("contratos")
+}
+
+model Empresa {
+  id            String           @id @default(cuid())
+  cnpj          String           @unique
+  razaoSocial   String
+  nomeFantasia  String
+  telefone      String
+  email         String
+  site          String?
+  responsavelRH String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  endereco      EnderecoEmpresa?
+
+  @@map("empresas")
+}
+
+model EnderecoEmpresa {
+  id          String   @id @default(cuid())
+  rua         String
+  numero      String
+  complemento String?
+  bairro      String
+  cidade      String
+  estado      String
+  cep         String
+  empresaId   String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  empresa     Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@map("enderecos_empresas")
+}
+
+enum StatusFuncionario {
+  ATIVO
+  INATIVO
+  FERIAS
+  LICENCA
+}
+
+enum TipoBeneficio {
+  PLANO_SAUDE
+  PLANO_ODONTOLOGICO
+  VALE_REFEICAO
+  VALE_TRANSPORTE
+  GYMPASS
+  OUTROS
+}
+
+enum TipoEquipamento {
+  NOTEBOOK
+  DESKTOP
+  MONITOR
+  MOUSE
+  TECLADO
+  HEADPHONE
+  OUTROS
+}
+
+enum StatusEquipamento {
+  DISPONIVEL
+  EM_USO
+  DEVOLVIDO
+  DANIFICADO
+}
+
+enum StatusProjeto {
+  ATIVO
+  CONCLUIDO
+  PAUSADO
+  CANCELADO
+}
+
+enum StatusFerias {
+  PENDENTE
+  APROVADA
+  REJEITADA
+  RENOVADA
+  EM_ANDAMENTO
+  CONCLUIDA
+}
+
+enum TipoContrato {
+  CLT
+  PJ
+  ESTAGIO
+  TRAINEE
+  OUTROS
+}
+
+enum StatusContrato {
+  ATIVO
+  INATIVO
+  RENOVADO
+}

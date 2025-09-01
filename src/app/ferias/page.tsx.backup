@@ -1,0 +1,505 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Plus, 
+  Clock, 
+  CheckCircle, 
+  XCircle,
+  AlertCircle,
+  Users,
+  Loader2,
+  RefreshCw,
+  BarChart3
+} from "lucide-react";
+import { FeriasDialog } from "@/components/ferias/ferias-dialog";
+import { StatusChangeDialog } from "@/components/ferias/status-change-dialog";
+import { FeriasChart } from "@/components/ferias/ferias-chart";
+
+interface FeriasStats {
+  totalFuncionarios: number;
+  feriasPendentes: number;
+  feriasAprovadas: number;
+  feriasRejeitadas: number;
+}
+
+export default function FeriasPage() {
+  const [stats, setStats] = useState<FeriasStats>({
+    totalFuncionarios: 0,
+    feriasPendentes: 0,
+    feriasAprovadas: 0,
+    feriasRejeitadas: 0
+  });
+  const [ferias, setFerias] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [statusChangeDialog, setStatusChangeDialog] = useState<{
+    open: boolean;
+    status: 'APROVADA' | 'REJEITADA';
+    feriasId: string;
+    title: string;
+    description: string;
+    confirmText: string;
+  } | null>(null);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Buscar estatísticas de férias
+      const [feriasResponse, funcionariosResponse] = await Promise.all([
+        fetch('/api/ferias'),
+        fetch('/api/funcionarios')
+      ]);
+
+      if (!feriasResponse.ok || !funcionariosResponse.ok) {
+        throw new Error('Erro ao buscar dados');
+      }
+
+      const [feriasData, funcionarios] = await Promise.all([
+        feriasResponse.json(),
+        funcionariosResponse.json()
+      ]);
+
+      setFerias(feriasData);
+
+      // Calcular estatísticas
+      const totalFuncionarios = funcionarios.length;
+      const feriasPendentes = feriasData.filter((f: any) => f.status === 'PENDENTE').length;
+      const feriasAprovadas = feriasData.filter((f: any) => f.status === 'APROVADA').length;
+      const feriasRejeitadas = feriasData.filter((f: any) => f.status === 'REJEITADA').length;
+
+      setStats({
+        totalFuncionarios,
+        feriasPendentes,
+        feriasAprovadas,
+        feriasRejeitadas
+      });
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas de férias:', error);
+      setError(error instanceof Error ? error.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  const handleNovaSolicitacao = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleSolicitacaoSuccess = () => {
+    setIsDialogOpen(false);
+    fetchStats();
+  };
+
+  const handleStatusChange = (feriaId: string, newStatus: 'APROVADA' | 'REJEITADA') => {
+    let title = '';
+    let description = '';
+    let confirmText = '';
+
+    switch (newStatus) {
+      case 'APROVADA':
+        title = 'Aprovar Férias';
+        description = 'Informe o motivo da aprovação das férias solicitadas.';
+        confirmText = 'Aprovar';
+        break;
+      case 'REJEITADA':
+        title = 'Recusar Férias';
+        description = 'Informe o motivo da recusa das férias solicitadas.';
+        confirmText = 'Recusar';
+        break;
+    }
+
+    setStatusChangeDialog({
+      open: true,
+      status: newStatus,
+      feriasId: feriaId,
+      title,
+      description,
+      confirmText
+    });
+  };
+
+  const handleStatusConfirm = async (motivo: string) => {
+    if (!statusChangeDialog) return;
+
+    try {
+      const response = await fetch('/api/ferias', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          id: statusChangeDialog.feriasId, 
+          status: statusChangeDialog.status,
+          motivo: motivo,
+          aprovadoPor: 'Usuário RH'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao alterar status das férias');
+      }
+
+      // Fechar diálogo e recarregar dados
+      setStatusChangeDialog(null);
+      fetchStats();
+    } catch (error) {
+      console.error('Erro ao alterar status das férias:', error);
+      setError(error instanceof Error ? error.message : 'Erro desconhecido');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Gestão de Férias</h1>
+            <p className="text-muted-foreground">
+              Carregando dados...
+            </p>
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-gray-200 rounded animate-pulse mb-2" />
+                <div className="h-3 bg-gray-200 rounded animate-pulse w-3/4" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Gestão de Férias</h1>
+            <p className="text-muted-foreground">
+              Erro ao carregar dados
+            </p>
+          </div>
+        </div>
+        
+        <div className="bg-red-50 border border-red-200 rounded-md p-6">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
+            <span className="text-red-800 font-medium">Erro ao carregar dados</span>
+          </div>
+          <p className="text-red-700 mt-2 mb-4">
+            {error}
+          </p>
+          <Button onClick={fetchStats} variant="outline">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Tentar novamente
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Gestão de Férias</h1>
+          <p className="text-muted-foreground">
+            Gerencie solicitações e aprovações de férias
+          </p>
+        </div>
+        <Button onClick={handleNovaSolicitacao}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nova Solicitação
+        </Button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total de Funcionários</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.totalFuncionarios || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Elegíveis para férias
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Férias Pendentes</CardTitle>
+            <Clock className="h-4 w-4 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">{stats?.feriasPendentes || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Aguardando aprovação
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Férias Aprovadas</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{stats?.feriasAprovadas || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Para este ano
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Férias Rejeitadas</CardTitle>
+            <XCircle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">{stats?.feriasRejeitadas || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Este mês
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Todas as Férias */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <AlertCircle className="h-5 w-5 text-blue-600" />
+            <span>Todas as Solicitações de Férias</span>
+          </CardTitle>
+          <CardDescription>
+            Visualize todas as solicitações organizadas por status
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {ferias.length > 0 ? (
+            <div className="space-y-4">
+                {ferias.map((feria) => (
+                  <div key={feria.id} className={`p-4 rounded-md border ${
+                    feria.status === 'PENDENTE' ? 'bg-yellow-50 border-yellow-200' :
+                    feria.status === 'APROVADA' ? 'bg-green-50 border-green-200' :
+                    feria.status === 'REJEITADA' ? 'bg-red-50 border-red-200' :
+                    'bg-gray-50 border-gray-200'
+                  }`}>
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium">
+                            <span className="text-gray-800">Funcionário:</span> {feria.funcionario.nome}
+                          </p>
+                          <Badge variant={
+                            feria.status === 'PENDENTE' ? 'secondary' : 
+                            feria.status === 'APROVADA' ? 'default' : 
+                            feria.status === 'REJEITADA' ? 'destructive' : 'secondary'
+                          } className="ml-2">
+                            {feria.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          <span className="text-gray-800">Período:</span> {new Date(feria.dataInicio).toLocaleDateString('pt-BR')} a {new Date(feria.dataFim).toLocaleDateString('pt-BR')}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <span className="text-gray-800">Dias:</span> {feria.diasSolicitados}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <span className="text-gray-800">Motivo:</span> {feria.motivo || 'Não informado'}
+                        </p>
+                        {feria.motivoRecusa && (
+                          <p className="text-sm text-red-600">
+                            <span className="text-red-800 font-medium">Motivo da Recusa:</span> {feria.motivoRecusa}
+                          </p>
+                        )}
+                        {feria.status === 'APROVADA' && feria.motivo && (
+                          <p className="text-sm text-green-600">
+                            <span className="text-green-800 font-medium">Motivo da Aprovação:</span> {feria.motivo}
+                          </p>
+                        )}
+                        {feria.observacoes && (
+                          <p className="text-sm text-gray-600">
+                            <span className="text-gray-800">Observações:</span> {feria.observacoes}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex space-x-2">
+                        {feria.status === 'PENDENTE' && (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => handleStatusChange(feria.id, 'APROVADA')}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Aprovar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleStatusChange(feria.id, 'REJEITADA')}
+                            >
+                              Recusar
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p className="text-lg font-medium">Nenhuma solicitação de férias</p>
+              <p className="text-sm">As solicitações de férias aparecerão aqui quando forem criadas</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Calendário de Férias */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Calendário de Férias 2025</CardTitle>
+          <CardDescription>
+            Visualize o planejamento de férias por mês
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const feriasAprovadas = ferias.filter(f => f.status === 'APROVADA');
+            
+            if (feriasAprovadas.length === 0) {
+              return (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg font-medium">Nenhum planejamento disponível</p>
+                  <p className="text-sm">O calendário será preenchido conforme as solicitações forem aprovadas</p>
+                </div>
+              );
+            }
+
+            // Agrupar férias por mês
+            const feriasPorMes: { [key: string]: any[] } = {};
+            feriasAprovadas.forEach(feria => {
+              const dataInicio = new Date(feria.dataInicio);
+              const mes = dataInicio.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
+              if (!feriasPorMes[mes]) {
+                feriasPorMes[mes] = [];
+              }
+              feriasPorMes[mes].push(feria);
+            });
+
+            // Ordenar meses cronologicamente
+            const mesesOrdenados = Object.keys(feriasPorMes).sort((a, b) => {
+              const mesA = new Date(feriasPorMes[a][0].dataInicio);
+              const mesB = new Date(feriasPorMes[b][0].dataInicio);
+              return mesA.getTime() - mesB.getTime();
+            });
+
+            return (
+              <div className="space-y-6">
+                {mesesOrdenados.map(mes => (
+                  <div key={mes} className="border rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3 capitalize">
+                      {mes}
+                    </h3>
+                    <div className="space-y-3">
+                      {feriasPorMes[mes].map(feria => (
+                        <div key={feria.id} className="bg-green-50 border border-green-200 rounded-md p-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium text-green-800">
+                                {feria.funcionario.nome}
+                              </p>
+                              <p className="text-sm text-green-600">
+                                {new Date(feria.dataInicio).toLocaleDateString('pt-BR')} a {new Date(feria.dataFim).toLocaleDateString('pt-BR')}
+                              </p>
+                              <p className="text-sm text-green-600">
+                                {feria.diasSolicitados} dias
+                              </p>
+                              {feria.motivo && (
+                                <p className="text-xs text-green-500 mt-1">
+                                  Motivo: {feria.motivo}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center">
+                              <Badge variant="default" className="bg-green-100 text-green-800 border-green-300">
+                                Aprovada
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </CardContent>
+      </Card>
+
+      {/* Gráfico de Distribuição de Férias */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <BarChart3 className="h-5 w-5 text-purple-600" />
+            <span>Análise de Distribuição de Férias</span>
+          </CardTitle>
+          <CardDescription>
+            Visualize a distribuição de férias aprovadas nos próximos 12 meses
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FeriasChart ferias={ferias} />
+        </CardContent>
+      </Card>
+
+      {/* Modal de Nova Solicitação */}
+      <FeriasDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSuccess={handleSolicitacaoSuccess}
+      />
+
+      {/* Modal de Mudança de Status */}
+      {statusChangeDialog && (
+        <StatusChangeDialog
+          open={statusChangeDialog.open}
+          onOpenChange={(open) => !open && setStatusChangeDialog(null)}
+          onConfirm={handleStatusConfirm}
+          title={statusChangeDialog.title}
+          description={statusChangeDialog.description}
+          confirmText={statusChangeDialog.confirmText}
+        />
+      )}
+    </div>
+  );
+}
