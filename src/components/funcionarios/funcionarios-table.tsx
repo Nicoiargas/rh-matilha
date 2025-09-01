@@ -41,6 +41,7 @@ import { FuncionarioViewDialog } from "./funcionario-view-dialog";
 
 interface FuncionariosTableProps {
   onFuncionarioUpdated: () => void;
+  searchQuery?: string;
 }
 
 const getStatusColor = (status: string) => {
@@ -65,7 +66,7 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-export function FuncionariosTable({ onFuncionarioUpdated }: FuncionariosTableProps) {
+export function FuncionariosTable({ onFuncionarioUpdated, searchQuery = "" }: FuncionariosTableProps) {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +78,21 @@ export function FuncionariosTable({ onFuncionarioUpdated }: FuncionariosTablePro
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [copiedPixId, setCopiedPixId] = useState<string | null>(null);
   const [copiedCnpjId, setCopiedCnpjId] = useState<string | null>(null);
+
+  // Filtrar funcionários baseado na busca
+  const filteredFuncionarios = funcionarios.filter(funcionario => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    return (
+      funcionario.nome.toLowerCase().includes(query) ||
+      funcionario.cpf.toLowerCase().includes(query) ||
+      funcionario.cargo.toLowerCase().includes(query) ||
+      funcionario.departamento.toLowerCase().includes(query) ||
+      (funcionario.emailCorporativo && funcionario.emailCorporativo.toLowerCase().includes(query)) ||
+      (funcionario.emailPessoal && funcionario.emailPessoal.toLowerCase().includes(query))
+    );
+  });
 
   const fetchFuncionarios = useCallback(async () => {
     try {
@@ -284,6 +300,21 @@ export function FuncionariosTable({ onFuncionarioUpdated }: FuncionariosTablePro
     );
   }
 
+  // Mostrar mensagem se a busca não retornar resultados
+  if (filteredFuncionarios.length === 0 && searchQuery.trim() && !loading && !error) {
+    return (
+      <div className="text-center py-8">
+        <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-muted-foreground mb-2">
+          Nenhum funcionário encontrado para esta busca
+        </h3>
+        <p className="text-muted-foreground">
+          Nenhum funcionário encontrado para "{searchQuery}". Tente uma busca diferente.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="rounded-md border">
@@ -299,8 +330,8 @@ export function FuncionariosTable({ onFuncionarioUpdated }: FuncionariosTablePro
                      <TableHead className="text-right">Ações</TableHead>
                    </TableRow>
                  </TableHeader>
-          <TableBody>
-            {funcionarios.map((funcionario) => (
+                  <TableBody>
+          {filteredFuncionarios.map((funcionario) => (
               <TableRow key={funcionario.id}>
                 <TableCell>
                   <div className="flex items-center space-x-3">

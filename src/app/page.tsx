@@ -56,17 +56,7 @@ export default function DashboardPage() {
       setStats(data);
     } catch (error) {
       console.error('Erro ao buscar estatísticas:', error);
-      // Fallback para dados mockados
-      setStats({
-        totalFuncionarios: 15,
-        funcionariosAtivos: 12,
-        funcionariosFerias: 2,
-        funcionariosLicenca: 1,
-        equipamentosEmUso: 8,
-        projetosAtivos: 5,
-        feriasPendentes: 3,
-        mediaSalarial: 8500.00
-      });
+      // Em caso de erro, não definir estatísticas
     } finally {
       setLoading(false);
     }

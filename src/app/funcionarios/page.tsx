@@ -3,13 +3,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SearchInput } from "@/components/ui/search-input";
 import { 
   Users,
   UserPlus,
   UserCheck,
   UserX,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Filter,
+  Download
 } from "lucide-react";
 import { FuncionariosTable } from "@/components/funcionarios/funcionarios-table";
 import { FuncionarioDialog } from "@/components/funcionarios/funcionario-dialog";
@@ -26,6 +29,8 @@ export default function FuncionariosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredStats, setFilteredStats] = useState<FuncionarioStats | null>(null);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -46,12 +51,15 @@ export default function FuncionariosPage() {
       }
       
       const data = await response.json();
-      setStats({
+      const newStats = {
         total: data.totalFuncionarios || 0,
         ativos: data.funcionariosAtivos || 0,
         novos: 0, // Será calculado quando implementarmos histórico
         inativos: (data.totalFuncionarios || 0) - (data.funcionariosAtivos || 0) - (data.funcionariosFerias || 0) - (data.funcariosLicenca || 0)
-      });
+      };
+      
+      setStats(newStats);
+      setFilteredStats(newStats);
     } catch (error) {
       console.error('Erro ao buscar estatísticas:', error);
       setError(error instanceof Error ? error.message : 'Erro desconhecido');
@@ -69,6 +77,27 @@ export default function FuncionariosPage() {
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    
+    if (!stats) return;
+
+    if (!query.trim()) {
+      setFilteredStats(stats);
+      return;
+    }
+
+    // Filtrar estatísticas baseado na busca
+    // Aqui você pode implementar lógica mais complexa de filtro
+    const filtered = {
+      ...stats,
+      // Por enquanto, mantém as estatísticas originais
+      // Em uma implementação real, você filtraria os dados reais
+    };
+    
+    setFilteredStats(filtered);
+  };
 
   const handleFuncionarioCreated = () => {
     // Recarregar estatísticas quando um novo funcionário for criado
@@ -88,7 +117,7 @@ export default function FuncionariosPage() {
     inativos: 0
   });
 
-  const currentStats = stats || getFallbackStats();
+  const currentStats = filteredStats || stats || getFallbackStats();
 
   if (loading && retryCount === 0) {
     return (
@@ -220,16 +249,50 @@ export default function FuncionariosPage() {
         </Card>
       </div>
 
+      {/* Search and Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Busca e Filtros</CardTitle>
+          <CardDescription>
+            Encontre funcionários específicos rapidamente
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <SearchInput
+                placeholder="Buscar por nome, CPF, cargo, departamento..."
+                onSearch={handleSearch}
+                className="w-full"
+              />
+            </div>
+            
+            <Button variant="outline">
+              <Filter className="mr-2 h-4 w-4" />
+              Filtros Avançados
+            </Button>
+            
+            <Button variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Exportar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Funcionários Table */}
       <Card>
         <CardHeader>
           <CardTitle>Lista de Funcionários</CardTitle>
           <CardDescription>
-            Visualize e gerencie todos os funcionários
+            {searchQuery ? `Resultados para: "${searchQuery}"` : 'Todos os funcionários da empresa'}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <FuncionariosTable onFuncionarioUpdated={handleFuncionarioUpdated} />
+          <FuncionariosTable 
+            searchQuery={searchQuery}
+            onFuncionarioUpdated={handleFuncionarioUpdated}
+          />
         </CardContent>
       </Card>
     </div>

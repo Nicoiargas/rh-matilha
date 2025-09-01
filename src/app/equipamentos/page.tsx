@@ -1,120 +1,156 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { SearchInput } from "@/components/ui/search-input";
 import { 
-  Plus, 
   Monitor, 
-  CheckCircle, 
-  UserCheck,
-  AlertTriangle,
-  Loader2,
-  RefreshCw,
+  Laptop, 
+  Headphones, 
+  Mouse, 
+  Keyboard,
+  Plus,
+  Filter,
+  Download,
   AlertCircle,
-  BarChart3,
-  Users,
-  Laptop,
-  Headphones,
-  Mouse,
-  Keyboard
+  RefreshCw,
+  CheckCircle,
+  XCircle,
+  Clock
 } from "lucide-react";
 import { EquipamentoDialog } from "@/components/equipamentos/equipamento-dialog";
-import Link from "next/link";
 
-interface EquipamentosStats {
+interface EquipamentoStats {
   total: number;
   disponiveis: number;
   emUso: number;
-  outros: number;
-}
-
-interface EquipamentoPorFuncionario {
-  funcionario: {
-    id: string;
-    nome: string;
-    cargo: string;
-    departamento: string;
-  };
-  equipamentos: any[];
+  emManutencao: number;
+  danificados: number;
 }
 
 export default function EquipamentosPage() {
-  const [stats, setStats] = useState<EquipamentosStats>({
-    total: 0,
-    disponiveis: 0,
-    emUso: 0,
-    outros: 0
-  });
-  const [equipamentosPorFuncionario, setEquipamentosPorFuncionario] = useState<EquipamentoPorFuncionario[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState<EquipamentoStats | null>(null);
+  const [equipamentos, setEquipamentos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredEquipamentos, setFilteredEquipamentos] = useState<any[]>([]);
 
-  const fetchStats = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/equipamentos');
-      if (!response.ok) {
+      // Timeout para evitar espera infinita
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 10000)
+      );
+      
+      const fetchPromise = Promise.all([
+        fetch('/api/equipamentos'),
+        fetch('/api/funcionarios')
+      ]);
+      
+      const [equipamentosResponse, funcionariosResponse] = await Promise.race([fetchPromise, timeoutPromise]) as [Response, Response];
+      
+      if (!equipamentosResponse.ok || !funcionariosResponse.ok) {
         throw new Error('Erro ao buscar dados');
       }
-
-      const equipamentos = await response.json();
       
-      const stats = {
-        total: equipamentos.length,
-        disponiveis: equipamentos.filter((e: any) => e.status === 'DISPONIVEL').length,
-        emUso: equipamentos.filter((e: any) => e.status === 'EM_USO').length,
-        outros: equipamentos.filter((e: any) => e.status !== 'DISPONIVEL' && e.status !== 'EM_USO').length
-      };
+      const [equipamentosData, funcionarios] = await Promise.all([
+        equipamentosResponse.json(),
+        funcionariosResponse.json()
+      ]);
 
-      setStats(stats);
+      setEquipamentos(equipamentosData);
 
-      // Agrupar equipamentos por funcionário
-      const equipamentosEmUso = equipamentos.filter((e: any) => e.status === 'EM_USO' && e.funcionario);
-      const agrupados = equipamentosEmUso.reduce((acc: any, equipamento: any) => {
-        const funcionarioId = equipamento.funcionario.id;
-        if (!acc[funcionarioId]) {
-          acc[funcionarioId] = {
-            funcionario: equipamento.funcionario,
-            equipamentos: []
-          };
-        }
-        acc[funcionarioId].equipamentos.push(equipamento);
-        return acc;
-      }, {});
+      // Calcular estatísticas
+      const total = equipamentosData.length;
+      const disponiveis = equipamentosData.filter((e: any) => e.status === 'DISPONIVEL').length;
+      const emUso = equipamentosData.filter((e: any) => e.status === 'EM_USO').length;
+      const emManutencao = equipamentosData.filter((e: any) => e.status === 'EM_MANUTENCAO').length;
+      const danificados = equipamentosData.filter((e: any) => e.status === 'DANIFICADO').length;
 
-      setEquipamentosPorFuncionario(Object.values(agrupados));
+      setStats({
+        total,
+        disponiveis,
+        emUso,
+        emManutencao,
+        danificados
+      });
+
+      setFilteredEquipamentos(equipamentosData);
     } catch (error) {
-      console.error('Erro ao buscar estatísticas de equipamentos:', error);
+      console.error('Erro ao buscar dados:', error);
       setError(error instanceof Error ? error.message : 'Erro desconhecido');
+      
+      // Fallback: usar dados padrão se houver erro
+      if (retryCount < 2) {
+        setRetryCount(prev => prev + 1);
+        setTimeout(() => fetchData(), 2000); // Tentar novamente em 2 segundos
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [retryCount]);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
-  const handleNovoEquipamento = () => {
-    setIsDialogOpen(true);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    
+    if (!query.trim()) {
+      setFilteredEquipamentos(equipamentos);
+      return;
+    }
+
+    // Filtrar equipamentos baseado na busca
+    const filtered = equipamentos.filter(equipamento => {
+      const searchTerm = query.toLowerCase();
+      return (
+        equipamento.descricao.toLowerCase().includes(searchTerm) ||
+        equipamento.marca.toLowerCase().includes(searchTerm) ||
+        equipamento.modelo.toLowerCase().includes(searchTerm) ||
+        equipamento.tipo.toLowerCase().includes(searchTerm) ||
+        (equipamento.funcionario && equipamento.funcionario.nome.toLowerCase().includes(searchTerm)) ||
+        equipamento.status.toLowerCase().includes(searchTerm)
+      );
+    });
+    
+    setFilteredEquipamentos(filtered);
   };
 
-  const handleEquipamentoSuccess = () => {
-    setIsDialogOpen(false);
-    fetchStats();
+  const handleEquipamentoCreated = () => {
+    // Recarregar dados quando um novo equipamento for criado
+    fetchData();
   };
 
-  if (loading) {
+  const handleEquipamentoUpdated = () => {
+    // Recarregar dados quando um equipamento for atualizado
+    fetchData();
+  };
+
+  // Fallback para dados padrão se houver erro
+  const getFallbackStats = (): EquipamentoStats => ({
+    total: 0,
+    disponiveis: 0,
+    emUso: 0,
+    emManutencao: 0,
+    danificados: 0
+  });
+
+  const currentStats = stats || getFallbackStats();
+
+  if (loading && retryCount === 0) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Gestão de Equipamentos</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Equipamentos</h1>
             <p className="text-muted-foreground">
               Carregando dados...
             </p>
@@ -138,12 +174,12 @@ export default function EquipamentosPage() {
     );
   }
 
-  if (error) {
+  if (error && !stats) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Gestão de Equipamentos</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Equipamentos</h1>
             <p className="text-muted-foreground">
               Erro ao carregar dados
             </p>
@@ -158,10 +194,15 @@ export default function EquipamentosPage() {
           <p className="text-red-700 mt-2 mb-4">
             {error}
           </p>
-          <Button onClick={fetchStats} variant="outline">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Tentar novamente
-          </Button>
+          <div className="flex space-x-2">
+            <Button onClick={fetchData} variant="outline">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Tentar novamente
+            </Button>
+            <Button onClick={() => setError(null)} variant="outline">
+              Continuar sem dados
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -171,165 +212,160 @@ export default function EquipamentosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestão de Equipamentos</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Equipamentos</h1>
           <p className="text-muted-foreground">
-            Gerencie equipamentos e alocações
+            Gerencie todos os equipamentos da empresa
           </p>
         </div>
-        <Button onClick={handleNovoEquipamento}>
-          <Plus className="mr-2 h-4 w-4" />
-          Novo Equipamento
-        </Button>
+        <EquipamentoDialog onEquipamentoCreated={handleEquipamentoCreated} />
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Link href="/equipamentos/disponiveis">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Equipamentos Disponíveis</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats?.disponiveis || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Prontos para alocação
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total</CardTitle>
+            <Monitor className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{currentStats.total}</div>
+            <p className="text-xs text-muted-foreground">
+              Total de equipamentos
+            </p>
+          </CardContent>
+        </Card>
         
-        <Link href="/equipamentos/em-uso">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Equipamentos em Uso</CardTitle>
-              <UserCheck className="h-4 w-4 text-blue-600" />
-        </CardHeader>
-        <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats?.emUso || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Alocados para funcionários
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Disponíveis</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{currentStats.disponiveis}</div>
+            <p className="text-xs text-muted-foreground">
+              Prontos para uso
+            </p>
+          </CardContent>
+        </Card>
         
-        <Link href="/equipamentos/manutencao">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Em Manutenção</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{stats?.outros || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Em reparo ou danificados
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Em Uso</CardTitle>
+            <Clock className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">{currentStats.emUso}</div>
+            <p className="text-xs text-muted-foreground">
+              Atualmente alocados
+            </p>
+          </CardContent>
+        </Card>
         
-        <Link href="/equipamentos/inventario">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Inventário Total</CardTitle>
-              <Monitor className="h-4 w-4 text-purple-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{stats?.total || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Equipamentos cadastrados
-              </p>
-        </CardContent>
-      </Card>
-        </Link>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Manutenção</CardTitle>
+            <AlertCircle className="h-4 w-4 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">{currentStats.emManutencao}</div>
+            <p className="text-xs text-muted-foreground">
+              Em reparo
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
-            {/* Equipamentos por Funcionário */}
+      {/* Search and Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Users className="h-5 w-5 text-blue-600" />
-            <span>Equipamentos por Funcionário</span>
-          </CardTitle>
+          <CardTitle>Busca e Filtros</CardTitle>
           <CardDescription>
-            Visualize os equipamentos alocados para cada funcionário
+            Encontre equipamentos específicos rapidamente
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {equipamentosPorFuncionario.length === 0 ? (
-            <div className="text-center py-8">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-muted-foreground">
-                Nenhum equipamento está alocado para funcionários no momento.
-              </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <SearchInput
+                placeholder="Buscar por descrição, marca, modelo, tipo, funcionário..."
+                onSearch={handleSearch}
+                className="w-full"
+              />
             </div>
-          ) : (
-          <div className="space-y-4">
-              {equipamentosPorFuncionario.map((grupo) => (
-                <div key={grupo.funcionario.id} className="border rounded-lg p-4">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Users className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">{grupo.funcionario.nome}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {grupo.funcionario.cargo} • {grupo.funcionario.departamento}
-                      </p>
-                    </div>
-                    <Badge className="ml-auto bg-blue-100 text-blue-800">
-                      {grupo.equipamentos.length} equipamento{grupo.equipamentos.length !== 1 ? 's' : ''}
-                    </Badge>
-                  </div>
-                  
-                  <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-                    {grupo.equipamentos.map((equipamento) => {
-                      const getTipoIcon = (tipo: string) => {
-                        switch (tipo) {
-                          case "NOTEBOOK":
-                            return <Laptop className="h-4 w-4" />;
-                          case "MONITOR":
-                            return <Monitor className="h-4 w-4" />;
-                          case "HEADPHONE":
-                            return <Headphones className="h-4 w-4" />;
-                          case "MOUSE":
-                            return <Mouse className="h-4 w-4" />;
-                          case "KEYBOARD":
-                            return <Keyboard className="h-4 w-4" />;
-                          default:
-                            return <Monitor className="h-4 w-4" />;
-                        }
-                      };
+            
+            <Button variant="outline">
+              <Filter className="mr-2 h-4 w-4" />
+              Filtros Avançados
+            </Button>
+            
+            <Button variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Exportar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-                      return (
-                        <div key={equipamento.id} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
-                          <div className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center">
-                            {getTipoIcon(equipamento.tipo)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{equipamento.descricao}</p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {equipamento.marca} {equipamento.modelo}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
+      {/* Equipamentos Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Visão Geral dos Equipamentos</CardTitle>
+          <CardDescription>
+            {searchQuery ? `Resultados para: "${searchQuery}"` : 'Todos os equipamentos da empresa'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filteredEquipamentos.map((equipamento) => (
+              <div key={equipamento.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    {equipamento.tipo === 'NOTEBOOK' && <Laptop className="h-5 w-5 text-blue-600" />}
+                    {equipamento.tipo === 'MONITOR' && <Monitor className="h-5 w-5 text-green-600" />}
+                    {equipamento.tipo === 'HEADPHONE' && <Headphones className="h-5 w-5 text-purple-600" />}
+                    {equipamento.tipo === 'MOUSE' && <Mouse className="h-5 w-5 text-gray-600" />}
+                    {equipamento.tipo === 'TECLADO' && <Keyboard className="h-5 w-5 text-orange-600" />}
+                    {equipamento.tipo === 'DESKTOP' && <Monitor className="h-5 w-5 text-indigo-600" />}
+                    {equipamento.tipo === 'OUTROS' && <Monitor className="h-5 w-5 text-gray-600" />}
+                  </div>
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    equipamento.status === 'DISPONIVEL' ? 'bg-green-100 text-green-800' :
+                    equipamento.status === 'EM_USO' ? 'bg-blue-100 text-blue-800' :
+                    equipamento.status === 'EM_MANUTENCAO' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {equipamento.status}
+                  </div>
+                </div>
+                
+                <h3 className="font-medium mb-2">{equipamento.descricao}</h3>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p><strong>Marca:</strong> {equipamento.marca}</p>
+                  <p><strong>Modelo:</strong> {equipamento.modelo}</p>
+                  {equipamento.funcionario && (
+                    <p><strong>Alocado para:</strong> {equipamento.funcionario.nome}</p>
+                  )}
                 </div>
               </div>
             ))}
           </div>
+          
+          {filteredEquipamentos.length === 0 && (
+            <div className="text-center py-8">
+              <Monitor className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-muted-foreground mb-2">
+                {searchQuery ? 'Nenhum equipamento encontrado para esta busca' : 'Nenhum equipamento cadastrado'}
+              </h3>
+              <p className="text-muted-foreground">
+                {searchQuery 
+                  ? `Nenhum equipamento encontrado para "${searchQuery}". Tente uma busca diferente.`
+                  : 'Comece cadastrando o primeiro equipamento da empresa.'
+                }
+              </p>
+            </div>
           )}
         </CardContent>
       </Card>
-
-      {/* Modal de Novo Equipamento */}
-      <EquipamentoDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onSuccess={handleEquipamentoSuccess}
-      />
     </div>
   );
 }
