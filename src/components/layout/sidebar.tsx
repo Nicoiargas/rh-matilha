@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -13,21 +14,125 @@ import {
   Monitor,
   DollarSign,
   FolderOpen,
-  FileText
+  FileText,
+  ChevronRight,
+  ChevronDown
 } from "lucide-react";
 
-const navigation = [
+interface MenuItem {
+  name: string;
+  href?: string;
+  icon: any;
+  children?: MenuItem[];
+}
+
+const navigation: MenuItem[] = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Funcionários", href: "/funcionarios", icon: Users },
-  { name: "Férias", href: "/ferias", icon: Calendar },
+  { 
+    name: "Funcionários", 
+    icon: Users,
+    children: [
+      { name: "Lista de Funcionários", href: "/funcionarios", icon: Users },
+      { name: "Férias", href: "/ferias", icon: Calendar },
+      { name: "Salários", href: "/salarios", icon: DollarSign }
+    ]
+  },
   { name: "Equipamentos", href: "/equipamentos", icon: Monitor },
-  { name: "Salários", href: "/salarios", icon: DollarSign },
   { name: "Projetos", href: "/projetos", icon: FolderOpen },
   { name: "Contratos", href: "/contratos", icon: FileText },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
+
+  // Função para verificar se um menu está ativo
+  const isMenuActive = (item: MenuItem): boolean => {
+    if (item.href) {
+      return pathname === item.href;
+    }
+    if (item.children) {
+      return item.children.some(child => pathname === child.href);
+    }
+    return false;
+  };
+
+  // Função para alternar expansão do menu
+  const toggleMenu = (menuName: string) => {
+    setExpandedMenus(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(menuName)) {
+        newSet.delete(menuName);
+      } else {
+        newSet.add(menuName);
+      }
+      return newSet;
+    });
+  };
+
+  // Auto-expandir menu se algum filho estiver ativo
+  React.useEffect(() => {
+    navigation.forEach(item => {
+      if (item.children && item.children.some(child => pathname === child.href)) {
+        setExpandedMenus(prev => new Set(prev).add(item.name));
+      }
+    });
+  }, [pathname]);
+
+  // Componente para renderizar item do menu
+  const MenuItemComponent = ({ item, level = 0 }: { item: MenuItem; level?: number }) => {
+    const isExpanded = expandedMenus.has(item.name);
+    const isActive = isMenuActive(item);
+    const hasChildren = item.children && item.children.length > 0;
+
+    if (hasChildren) {
+      return (
+        <div>
+          <button
+            onClick={() => toggleMenu(item.name)}
+            className={cn(
+              "group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-colors",
+              isActive
+                ? "bg-gray-100 text-gray-900"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            )}
+            style={{ paddingLeft: `${8 + level * 16}px` }}
+          >
+            <item.icon className="mr-3 h-5 w-5" />
+            {item.name}
+            {isExpanded ? (
+              <ChevronDown className="ml-auto h-4 w-4" />
+            ) : (
+              <ChevronRight className="ml-auto h-4 w-4" />
+            )}
+          </button>
+          {isExpanded && (
+            <div className="ml-4">
+              {item.children!.map((child) => (
+                <MenuItemComponent key={child.name} item={child} level={level + 1} />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <Link
+        href={item.href!}
+        className={cn(
+          "group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors",
+          isActive
+            ? "bg-gray-100 text-gray-900"
+            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+        )}
+        style={{ paddingLeft: `${8 + level * 16}px` }}
+      >
+        <item.icon className="mr-3 h-5 w-5" />
+        {item.name}
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -51,19 +156,7 @@ export function Sidebar() {
             </div>
             <nav className="mt-8 flex-1 px-2 space-y-1">
               {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors",
-                    pathname === item.href
-                      ? "bg-gray-100 text-gray-900"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                  )}
-                >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </Link>
+                <MenuItemComponent key={item.name} item={item} />
               ))}
             </nav>
           </div>
@@ -80,19 +173,7 @@ export function Sidebar() {
           </div>
           <nav className="mt-8 flex-1 px-2 space-y-1">
             {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors",
-                  pathname === item.href
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                )}
-              >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.name}
-              </Link>
+              <MenuItemComponent key={item.name} item={item} />
             ))}
           </nav>
         </div>
